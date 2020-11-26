@@ -89,6 +89,7 @@ class RC5:
 
     def encrypt_file(self, iv, in_fp, out_fp):
         with open(in_fp, "rb") as inf, open(out_fp, "wb") as outf:
+            outf.write(iv.to_bytes(self.u * 2, "little"))
             while True:
                 chunk = inf.read(self.u*2)
 
@@ -104,7 +105,7 @@ class RC5:
 
     def decrypt_file(self, in_fp, out_fp):
         with open(in_fp, "rb") as inf, open(out_fp, "wb") as outf:
-            iv = 0
+            iv = int.from_bytes(inf.read(self.u*2), "little")
             while True:
                 chunk = int.from_bytes(inf.read(self.u*2), "little")
 
@@ -117,10 +118,14 @@ class RC5:
 
 
 if __name__ == "__main__":
-    n = RC5(32, 12, b"fdsdsfsd")
-    n.encrypt_file(146, "fin", "fout")
+    import secrets
 
-    k = RC5(32, 12, b"fdsdsfsd")
+    iv = secrets.randbits(64)
+
+    n = RC5(32, 12, b"secret key")
+    n.encrypt_file(iv, "fin", "fout")
+
+    k = RC5(32, 12, b"secret key")
     k.decrypt_file("fout", "tem")
 
     with open("tem", "rb") as f:
