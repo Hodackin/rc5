@@ -20,7 +20,7 @@ class RC5:
     def _modular_add(self, a, b):
         return (a + b) % pow(2, self.w)
 
-    def _modular_sub(self,a, b):
+    def _modular_sub(self, a, b):
         return (a - b) % pow(2, self.w)
 
     def _left_rotate(self, x, n):
@@ -89,6 +89,7 @@ class RC5:
 
     def encrypt_file(self, iv, in_fp, out_fp):
         with open(in_fp, "rb") as inf, open(out_fp, "wb") as outf:
+            iv = self.decrypt_message(iv)
             outf.write(iv.to_bytes(self.u * 2, "little"))
             while True:
                 chunk = inf.read(self.u*2)
